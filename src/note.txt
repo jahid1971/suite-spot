@@ -1,0 +1,104 @@
+import { createContext } from 'react'
+import {
+  createUserWithEmailAndPassword,
+  getAuth,
+  GoogleAuthProvider,
+  onAuthStateChanged,
+  sendEmailVerification,
+  sendPasswordResetEmail,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  signOut,
+  updateProfile,
+} from 'firebase/auth'
+import { defineStore } from 'pinia'
+import app from '../firebase/firebase.config'
+
+const auth = getAuth(app)
+const googleProvider = new GoogleAuthProvider()
+
+export const useAuthStore = defineStore('auth', {
+  state: () => ({
+    user: null,
+    loading: true,
+  }),
+  actions: {
+    createUser(email, password) {
+      this.loading = true
+      return createUserWithEmailAndPassword(auth, email, password)
+    },
+
+    updateUserProfile(name, photo) {
+      this.loading = true
+      return updateProfile(auth.currentUser, {
+        displayName: name,
+        photoURL: photo,
+      })
+    },
+
+    verifyEmail() {
+      this.loading = true
+      return sendEmailVerification(auth.currentUser)
+    },
+
+    signInWithGoogle() {
+      this.loading = true
+      return signInWithPopup(auth, googleProvider)
+    },
+
+    logout() {
+      this.loading = true
+      localStorage.removeItem('aircnc-token')
+      return signOut(auth)
+    },
+
+    signin(email, password) {
+      this.loading = true
+      return signInWithEmailAndPassword(auth, email, password)
+    },
+
+    resetPassword(email) {
+      this.loading = true
+      return sendPasswordResetEmail(auth, email)
+    },
+
+    initialize() {
+      const unsubscribe = onAuthStateChanged(auth, currentUser => {
+        this.user = currentUser
+        this.loading = false
+      })
+
+      this.$onUnmount(() => {
+        unsubscribe()
+      })
+    }
+  }
+})
+
+
+
+
+// In the component that uses the store, you would import and use it like this:
+import { useAuthStore } from '../path/to/store'
+
+export default {
+  setup() {
+    const authStore = useAuthStore()
+
+    // Accessing state
+    console.log(authStore.user)
+    console.log(authStore.loading)
+
+    // Calling actions
+    authStore.createUser('user@example.com', 'password')
+    authStore.updateUserProfile('John Doe', 'https://example.com/avatar.jpg')
+    authStore.verifyEmail()
+    authStore.signInWithGoogle()
+    authStore.logout()
+    authStore.signin('user@example.com', 'password')
+    authStore.resetPassword('user@example.com')
+
+    // Initializing the store
+    authStore.initialize()
+  }
+}
