@@ -102,3 +102,9 @@ export default {
     authStore.initialize()
   }
 }
+
+
+
+
+username = db3
+password = cXU04uIMwe1o5fPo
