@@ -8,7 +8,7 @@
             <form @submit.prevent="handleSubmit" noValidate='' action=''
                 class='space-y-12 ng-untouched ng-pristine ng-valid'>
                 <div class='space-y-4'>
-                 
+
                     <div>
                         <label htmlFor='email' class='block mb-2 text-sm'>
                             Email address
@@ -43,6 +43,11 @@
                     </div>
                 </div>
             </form>
+            <div className='space-y-1'>
+                <button @click="handleReset" className='text-xs hover:underline text-gray-400'>
+                    Forgot password?
+                </button>
+            </div>
             <div class='flex items-center pt-4 space-x-1'>
                 <div class='flex-1 h-px sm:w-16 dark:bg-gray-700'></div>
                 <p class='px-3 text-sm dark:text-gray-400'>
@@ -74,9 +79,9 @@
                 </button>
             </div>
             <p class='px-6 text-sm text-center text-gray-400'>
-                 Don't have any account yet ? 
+                Don't have any account yet ?
                 <router-link to="/sign-up" class='hover:underline text-gray-600'>
-                        Sign Up
+                    Sign Up
                 </router-link>
                 .
             </p>
@@ -88,6 +93,8 @@
 
 
 <script setup>
+import { async } from '@firebase/util';
+import Swal from 'sweetalert2';
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import PrimaryButton from '../../components/button/PrimaryButton.vue';
@@ -109,7 +116,7 @@ const from = route.params.from || '/'
 // const { authStore.loading, createUser,auth,test } = UseAuthStore()
 // const loading = ref(false)
 const authStore = UseAuthStore()
-const {signin, verifyEmail, signInWithGoogle } = UseAuthStore()
+const { signin, verifyEmail, signInWithGoogle, resetPassword } = UseAuthStore()
 
 
 
@@ -121,32 +128,65 @@ const handleSubmit = event => {
     event.preventDefault()
 
     signin(email.value, password.value)
-      .then(result => {
-        swalToast("Sign in success", "success",true)
-        // Get Token
-        authStore.authLoading = false
-        // setAuthToken(result.user)
-        router.replace(from)
-      })
-      .catch(err => {
-        swalToast(err.message, "error",true)
-        console.log(err)
-        authStore.authLoading =false
-      })
-  }
+        .then(result => {
+            swalToast("Sign in success", "success", true)
+            // Get Token
+            authStore.authLoading = false
+            // setAuthToken(result.user)
+            router.replace(from)
+        })
+        .catch(err => {
+            swalToast(err.message, "error", true)
+            console.log(err)
+            authStore.authLoading = false
+        })
+}
 
 
 const handleGoogleSignin = () => {
     signInWithGoogle()
-    .then(result => {
-        console.log(result.user)
-        authStore.loading = false
-        swalToast("Sign in success", "success",true)
-        //   setAuthToken(result.user)
-        //   setLoading(false)
-        router.replace(from)
-    })
-    .catch(err => console.log(err))
+        .then(result => {
+            console.log(result.user)
+            authStore.authLoading = false
+            swalToast("Sign in success", "success", true)
+            //   setAuthToken(result.user)
+            //   setLoading(false)
+            router.replace(from)
+        })
+        .catch(err => console.log(err))
+}
+
+
+
+const handleReset = async () => {
+    if (!email.value) {
+        const { value: swalEmail } = await Swal.fire({
+            title: 'Input email address',
+            input: 'email',
+            inputLabel: 'Your email address',
+            inputPlaceholder: 'Enter your email address'
+        })
+
+        if (swalEmail) {
+            email.value = swalEmail
+            console.log(email.value)
+        }
+    }
+
+    if (email.value) {
+        resetPassword(email.value)
+            .then(() => {
+                email.value = ""
+                authStore.authLoading = false
+                swalToast("Please check your email","success")
+            })
+            .catch(err => {
+                authStore.authLoading = false
+                swalToast(err.message, "error", true)
+                console.log(err)
+                authStore.authLoading = false
+            })
+    }
 }
 
 </script>
