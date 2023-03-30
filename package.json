@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "@headlessui/vue": "^1.7.12",
+    "@heroicons/vue": "^2.0.16",
+    "@vuepic/vue-datepicker": "^4.2.1",
+    "vue3-datepicker": "^0.3.4"
+  }
+}

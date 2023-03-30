@@ -97,10 +97,12 @@ import { async } from '@firebase/util';
 import Swal from 'sweetalert2';
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { setAuthToken } from '../../api/Auth';
 import PrimaryButton from '../../components/button/PrimaryButton.vue';
 import SmallSpinner from '../../components/spinners/SmallSpinner.vue';
 import UseAuthStore from '../../store/AuthStore'
 import swalToast from '../../utils/mySweetalert'
+
 
 
 // const navigate = useNavigate()
@@ -131,8 +133,8 @@ const handleSubmit = event => {
         .then(result => {
             swalToast("Sign in success", "success", true)
             // Get Token
+             setAuthToken(result.user)
             authStore.authLoading = false
-            // setAuthToken(result.user)
             router.replace(from)
         })
         .catch(err => {
@@ -149,7 +151,7 @@ const handleGoogleSignin = () => {
             console.log(result.user)
             authStore.authLoading = false
             swalToast("Sign in success", "success", true)
-            //   setAuthToken(result.user)
+              setAuthToken(result.user)
             //   setLoading(false)
             router.replace(from)
         })
@@ -158,6 +160,7 @@ const handleGoogleSignin = () => {
 
 
 
+//reset password
 const handleReset = async () => {
     if (!email.value) {
         const { value: swalEmail } = await Swal.fire({

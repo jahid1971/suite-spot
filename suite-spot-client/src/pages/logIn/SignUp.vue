@@ -89,7 +89,7 @@
             <p class='px-6 text-sm text-center text-gray-400'>
                 Already have an account yet?
                 <router-link to="/sign-in" class='hover:underline text-gray-600'>
-                      Sign In
+                    Sign In
                 </router-link>
                 .
             </p>
@@ -102,6 +102,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import { setAuthToken } from '../../api/Auth';
 import PrimaryButton from '../../components/button/PrimaryButton.vue';
 import SmallSpinner from '../../components/spinners/SmallSpinner.vue';
 import UseAuthStore from '../../store/AuthStore'
@@ -138,14 +139,15 @@ const handleSubmit = (e) => {
             //createUser
             createUser(email.value, password.value)
                 .then(result => {
+                    setAuthToken(result.user)
                     //updateUser
                     updateUserProfile(name.value, imageData?.data.display_url)
                         .then(() => {
-                            verifyEmail() //verifyUser
-                                .then(() => {
+                            // verifyEmail() //verifyUser
+                                // .then(() => {
                                     swalToast("Please check your email for verification link.", "success", true, false)
                                     loading.value = false
-                                })
+                                // })
                         }
                         )
                         .catch(err => {
@@ -164,15 +166,15 @@ const handleSubmit = (e) => {
 
 const handleGoogleSignin = () => {
     signInWithGoogle()
-    .then(result => {
-        console.log(result.user)
-        loading.value = false
-        swalToast("Sign in success", "success",true)
-        //   setAuthToken(result.user)
-        //   setLoading(false)
-        //   navigate(from, { replace: true })
-    })
-    .catch(err => console.log(err))
+        .then(result => {
+            console.log(result.user)
+            loading.value = false
+            swalToast("Sign in success", "success", true)
+              setAuthToken(result.user)
+            //   setLoading(false)
+            //   navigate(from, { replace: true })
+        })
+        .catch(err => console.log(err))
 }
 
 </script>
