@@ -3,22 +3,22 @@
         <div class='flex justify-between'>
             <div>
                 <h2 class='text-gray-900 title-font text-lg font-medium'>
-                    {{}}
+                    {{homeData?.title}}
                 </h2>
                 <br />
                 <h3 class='text-gray-400 text-xs tracking-widest title-font mb-1 mt-1'>
-                    {{}}.
+                    {{homeData?.location}}.
                 </h3>
                 <h3 class='text-gray-400 text-xs tracking-widest title-font mb-1 mt-1'>
-                    {{}} Guests {{}} Bedrooms{{' '}}
-                    {{}} bathrooms.
+                    {{homeData?.total_guest}} Guest {{homeData?.bedrooms}} Bedroom{{' '}}
+                    {{homeData?.bathrooms}} bathroom.
                 </h3>
             </div>
             <div>
                 <div class='flex flex-col items-center justify-center'>
                     <img alt='' referrerPolicy='no-referrer' class='w-16 h-16 border rounded-full'
-                        src={{homeData?.host?.image}} />
-                    <p>{{}}</p>
+                        :src='homeData?.host?.image' />
+                    <p>{{homeData?.host?.name}}</p>
                 </div>
             </div>
         </div>
@@ -64,7 +64,7 @@
                     <UserIcon />
                 </div>
                 <div class='flex-grow prose sm:text-left prose-md'>
-                    <p class='text-gray-500 text-xl'>Atik is a Super host</p>
+                    <p class='text-gray-500 text-xl'>{{homeData?.host?.name}} is a Super host</p>
                     <p class='text-gray-400'>
                         Super hosts are experienced, highly rated hosts who are committed
                         to providing great stays for guests.
@@ -96,7 +96,7 @@
         <br />
         <div class='flex gap-3 items-center text-xl text-blue-600'>
             <p>Read more about the space</p>
-            <ChevronDownIcon class='h-5 w-5' />
+            <ChevronDownIco class='h-5 w-5' />
         </div>
         <br />
         <div>
@@ -112,8 +112,11 @@
 </template>
 
 <script setup>
-import { ChevronDownIcon, StarIcon } from '@heroicons/vue/24/solid';
+import { BeakerIcon, CheckBadgeIcon, ChevronDownIcon, HomeIcon, StarIcon, UserIcon } from '@heroicons/vue/24/solid';
 
+const props = defineProps({
+    homeData: Object
+})
 
 </script>
 

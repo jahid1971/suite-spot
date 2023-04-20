@@ -9,7 +9,7 @@ import Swal from "sweetalert2";
     icon: iconValue,
     title: titleValue,
     showConfirmButton: confirmationValue ,
-    timer: 2500,
+    timer: 1000,
     timerProgressBar: true
   })}
 

@@ -5,25 +5,31 @@
         </h1>
         <br />
         <h3 class='text-gray-900 title-font text-xl font-medium'>
-            {{}} nights in {{}}
+            {{ totalNights }} nights in {{ homeData?.location }}
         </h3>
         <div class='flex flex-wrap gap-10 mt-4'>
             <div class='flex justify-between gap-2'>
                 <div class='text-sm px-3 py-1 bg-gray-200 text-center'>
                     <p>
                         {{
-                  
+                            format(new Date(homeData?.from), 'PP')
+                                .split(',')[0]
+                                .split(' ')[0]
+
                         }}
                     </p>
                     <p>
                         {{
-                
+                            format(new Date(homeData?.from), 'PP')
+                                .split(',')[0]
+                                .split(' ')[1]
+
                         }}
                     </p>
                 </div>
                 <div>
-                    <p>{{}} check-in</p>
-                    <p>After 12:00 PM</p>
+                    <p>{{  format(new Date(homeData?.from), 'cccc') }} check-in</p>
+                    <p>after 12:00 PM</p>
                 </div>
             </div>
             <div class='flex justify-between'>
@@ -31,18 +37,24 @@
                     <div class='text-sm px-3 py-1 bg-gray-200 text-center'>
                         <p>
                             {{
-                     
+                                format(new Date(homeData?.to), 'PP')
+                                    .split(',')[0]
+                                    .split(' ')[0]
+
                             }}
                         </p>
                         <p>
                             {{
-                       
+                                format(new Date(homeData?.to), 'PP')
+                                    .split(',')[0]
+                                    .split(' ')[1]
+
                             }}
                         </p>
                     </div>
                     <div>
-                        <p>{{}} check-in</p>
-                        <p>After 12:00 PM</p>
+                        <p>{{  format(new Date(homeData?.to), 'cccc') }} check-out</p>
+                        <p>before 12:00 PM</p>
                     </div>
                 </div>
             </div>
@@ -98,16 +110,20 @@
         <br />
 
         <button class='p-2 rounded-md hover:text-gray-100 bg-gradient-to-r from-emerald-500 to-lime-500 text-white'
-            
-            >
+            @click="props.changeTab(1)">
             Agree and continue
         </button>
     </div>
 </template>
 
 <script setup>
+import { defineProps } from 'vue';
 import { ChevronDownIcon, FaceSmileIcon, FireIcon, NoSymbolIcon, UserGroupIcon } from '@heroicons/vue/24/solid';
+import { format } from 'date-fns'
 
+const props = defineProps(['changeTab', 'checkoutData'])
+const homeData = props.checkoutData.homeData
+const totalNights = props.checkoutData.totalNights
 
 </script>
 

@@ -17,7 +17,8 @@
             </div>
             <div class='container pb-8 pt-2 mx-auto'>
                <div class='flex flex-wrap'>
-                  <HomeCard v-for="(home, i) in  [...Array(10)]" :home="home" :key="i"></HomeCard>
+                  <!-- <HomeCard v-for="(home, i) in  [...Array(10)]" :home="home" :key="i"></HomeCard> -->
+                  <HomeCard v-for="(home, i) in  allHomes" :home="home" :key="i"></HomeCard>
                </div>
             </div>
          </div>
@@ -41,12 +42,18 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import ExpCard from '../components/card/ExpCard.vue';
 import HomeCard from '../components/card/HomeCard.vue';
 import SearchForm from '../components/form/searchForm.vue';
+import {getAllHomes} from '../api/Services'
 
 const allExpData = ref([])
+const allHomes = ref([])
+
+onMounted(()=>{
+   getAllHomes().then(data => allHomes.value = data )
+})
 
 fetch("expData.json")
    .then(res => res.json())

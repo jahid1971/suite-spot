@@ -1,6 +1,7 @@
 <template>
-    <button @click="handler" class='hover:text-gray-100 bg-gradient-to-r from-emerald-500 to-lime-500 text-white'
-         :class="classes">
+    <button @click="handler"
+         :class="classes"
+         class='hover:text-gray-100 bg-gradient-to-r from-emerald-500 to-lime-500 text-white'>
         <!-- {children} -->
         <slot />
     </button>

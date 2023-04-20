@@ -3,7 +3,7 @@
         <div class=' mx-auto flex flex-wrap py-5 px-20 flex-col md:flex-row items-center'>
             <router-link to='/'
                 class='flex title-font font-medium items-center text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-lime-500 mb-4 md:mb-0'>
-                <span class='ml-3 text-2xl font-bold '>Aircnc</span> <span> {{ user?.displayName }}</span>
+                <span class='ml-3 text-2xl font-bold '>Suite-Spot</span> <span> </span>
             </router-link>
             <nav class='md:ml-auto flex flex-wrap items-center text-base justify-center'>
 
@@ -38,10 +38,8 @@
 
                             <hr class='border-gray-200' />
 
-                            <div @click="() => {
-                                authStore.logout()
-                                isDropdownOpen = !isDropdownOpen
-                            }" class='flex items-center cursor-pointer p-3 text-sm text-gray-600 capitalize
+                            <div @click="signOut" 
+                               class='flex items-center cursor-pointer p-3 text-sm text-gray-600 capitalize
                                         transition-colors duration-200 transform hover:bg-gray-100 '>
                                 <svg class='w-5 h-5 mx-1' viewBox='0 0 24 24' fill='none'
                                     xmlns='http://www.w3.org/2000/svg'>
@@ -75,13 +73,27 @@
 <script setup>
 import { ref, computed } from 'vue';
 import UseAuthStore from '../store/AuthStore';
+import { useRoute, useRouter } from 'vue-router';
+import ComingSoon from '../pages/shared/Coming-soon.vue';
+import PrimaryButton from './button/PrimaryButton.vue';
 
 
 const authStore = UseAuthStore()
 const user = computed(() => authStore?.user)
 const isDropdownOpen = ref(false)
-console.log(user)
+const route = useRoute()
+const router = useRouter()
 
+// console.log( 'route',route.meta.requiresAuth );
+
+const signOut = () => {
+    authStore.logout()
+    .then(() => {
+        isDropdownOpen.value = !isDropdownOpen.value
+        if(route.meta.requiresAuth) router.push('/sign-in')
+    })
+    
+}
 </script>
 
 <style lang="scss" scoped></style>

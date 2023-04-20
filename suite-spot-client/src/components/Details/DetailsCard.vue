@@ -1,7 +1,7 @@
 <template>
     <div class="p-4 md:w-1/2 lg:w-1/3 w-full h-full rounded shadow-lg">
         <h1 class="text-gray-900 text-3xl title-font font-medium mb-2">
-            ${{}}/ <span class="font-thin">night</span>
+            ${{ homeData?.price }}/ <span class="font-thin">night</span>
         </h1>
         <div class="flex gap-1 mb-2">
             <StarIcon class="h4 w-4 text-green-500" />{{ ' ' }}
@@ -10,20 +10,20 @@
 
         <p>Dates</p>
         <div class="flex justify-between items-center p-2 border mt-1 mb-2">
-            <div>{{}}</div>
+            <div>{{ format(new Date(homeData?.from), 'P') }}</div>
             <div>
                 <ArrowRightIcon class="h5 w-5" />
             </div>
-            <div>{{}}</div>
+            <div>{{ format(new Date(homeData?.to), 'P') }}</div>
         </div>
 
         <div class="flex border-t border-gray-200 py-2">
             <span class="text-gray-500">Maximum Guest</span>
-            <span class="ml-auto text-gray-900">{{}}</span>
+            <span class="ml-auto text-gray-900">{{ homeData?.total_guest }}</span>
         </div>
 
         <div class="flex border-t border-gray-200 py-2">
-            <span class="text-gray-500"> ${{}} x {{}} nights </span>
+            <span class="text-gray-500"> ${{ homeData?.price }} x {{ totalNights }} nights </span>
             <span class="ml-auto text-gray-900">${{ sub_total }}</span>
         </div>
         <div class="flex border-t border-gray-200 py-2">
@@ -36,22 +36,45 @@
         </div>
         <div class="flex border-t border-b mb-6 border-gray-200 py-2">
             <span class="text-gray-900 font-bold">Total</span>
-            <span class="ml-auto text-gray-900">${{}}</span>
+            <span class="ml-auto text-gray-900">${{ total }}</span>
         </div>
         <div class="mt-6 mb-2">
-            <router-link to="/checkout">
-                <PrimaryButton type="submit"
+            
+                <PrimaryButton  @click="handleReserve"
                     classes="w-full px-4 py-2 tracking-wide transition-colors duration-300 transform rounded-md">
                     Reserve
                 </PrimaryButton>
-            </router-link>
+
         </div>
         <p class="text-center text-gray-400 mb-6">You won't be charged yet!</p>
     </div>
 </template>
 
 <script setup>
+import { ArrowRightIcon } from "@heroicons/vue/24/solid";
 import PrimaryButton from "../button/PrimaryButton.vue";
+import { differenceInCalendarDays, format } from 'date-fns'
+import { useRouter } from "vue-router";
+
+const router = useRouter()
+const props = defineProps({
+    homeData: Object
+})
+
+const totalNights = differenceInCalendarDays(new Date(props.homeData?.to), new Date(props.homeData?.from))
+const sub_total = parseFloat(props.homeData?.price) * totalNights
+const total = sub_total + 21 + 10
+
+const handleReserve = () => {
+    const data = {
+        homeData: props.homeData,
+        totalNights: totalNights,
+        totalPrice: total,
+    }
+
+    router.push({ path: "/checkout" , query : { data: JSON.stringify(data) }})
+}
+
 </script>
 
 <style lang="scss" scoped></style>

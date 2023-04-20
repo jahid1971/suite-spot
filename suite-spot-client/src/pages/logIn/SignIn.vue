@@ -105,14 +105,11 @@ import swalToast from '../../utils/mySweetalert'
 
 
 
-// const navigate = useNavigate()
-//   const location = useLocation()
-// const from = location.state?.from?.pathname || '/'
-// navigate(from, { replace: true })
-
 const route = useRoute()
 const router = useRouter()
-const from = route.params.from || '/'
+// const from = route.params.from || '/'
+
+// const redirect = router.currentRoute.value.query.redirect || '/'
 
 
 // const { authStore.loading, createUser,auth,test } = UseAuthStore()
@@ -135,7 +132,7 @@ const handleSubmit = event => {
             // Get Token
              setAuthToken(result.user)
             authStore.authLoading = false
-            router.replace(from)
+            router.go(-1)
         })
         .catch(err => {
             swalToast(err.message, "error", true)
@@ -148,14 +145,17 @@ const handleSubmit = event => {
 const handleGoogleSignin = () => {
     signInWithGoogle()
         .then(result => {
-            console.log(result.user)
+            console.log("gooooooooooglesignIn   ",result.user)
             authStore.authLoading = false
             swalToast("Sign in success", "success", true)
               setAuthToken(result.user)
             //   setLoading(false)
-            router.replace(from)
+            router.go(-1)
         })
-        .catch(err => console.log(err))
+        .catch(err =>{
+            authStore.authLoading = false
+            console.log(err)
+        })
 }
 
 

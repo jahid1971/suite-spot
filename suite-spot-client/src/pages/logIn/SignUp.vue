@@ -102,6 +102,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import { setAuthToken } from '../../api/Auth';
 import PrimaryButton from '../../components/button/PrimaryButton.vue';
 import SmallSpinner from '../../components/spinners/SmallSpinner.vue';
@@ -115,7 +116,7 @@ import swalToast from '../../utils/mySweetalert'
 const loading = ref(false)
 const { createUser, updateUserProfile, verifyEmail, signInWithGoogle } = UseAuthStore()
 
-
+const router = useRouter()
 
 
 const name = ref('')
@@ -147,6 +148,7 @@ const handleSubmit = (e) => {
                                 // .then(() => {
                                     swalToast("Please check your email for verification link.", "success", true, false)
                                     loading.value = false
+                                    router.go(-1)
                                 // })
                         }
                         )
@@ -171,10 +173,14 @@ const handleGoogleSignin = () => {
             loading.value = false
             swalToast("Sign in success", "success", true)
               setAuthToken(result.user)
+              router.go(-1)
             //   setLoading(false)
             //   navigate(from, { replace: true })
         })
-        .catch(err => console.log(err))
+        .catch(err =>{
+            authStore.authLoading = false
+            console.log(err)
+        })
 }
 
 </script>

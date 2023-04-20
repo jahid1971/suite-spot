@@ -1,12 +1,13 @@
 <template>
     <div class='md:flex gap-5 items-start justify-between sm:mx-10 md:mx-20 px-4 lg:mx-40 py-4'>
         <div class="flex-1">
-            <TabGroup>
+            <TabGroup :selectedIndex="selectedTab" @change="changeTab">
                 <TabList>
 
                     <div class="container flex flex-wrap items-center py-4 mx-auto overflow-y-auto whitespace-nowrap">
-                        <Tab>
-                            <button :class="[selected ? 'text-blue-600' : 'text-gray-600']">
+                        <Tab as="template" v-slot="{ selected }">
+                            <button
+                                :class="[selected ? 'text-blue-600 focus:outline-none bg-green-50 p-1' : 'text-gray-600']">
                                 1. Reviews house rules
                             </button>
                         </Tab>
@@ -17,8 +18,9 @@
                                     clipRule='evenodd' />
                             </svg>
                         </span>
-                        <Tab>
-                            <button :class="[selected ? 'text-blue-600' : 'text-gray-600']">
+                        <Tab as="template" v-slot="{ selected }">
+                            <button
+                                :class="[selected ? 'text-blue-600 focus:outline-none bg-green-50 p-1' : 'text-gray-600']">
                                 2. Who's coming?
                             </button>
                         </Tab>
@@ -29,8 +31,9 @@
                                     clipRule='evenodd' />
                             </svg>
                         </span>
-                        <Tab>
-                            <button :class="[selected ? 'text-blue-600' : 'text-gray-600']">
+                        <Tab as="template" v-slot="{ selected }">
+                            <button
+                                :class="[selected ? 'text-blue-600 focus:outline-none bg-green-50 p-1' : 'text-gray-600']">
                                 3. Confirm and pay
                             </button>
                         </Tab>
@@ -43,28 +46,101 @@
                         </span>
                     </div>
 
+
                 </TabList>
                 <TabPanels>
                     <TabPanel>
-                        <ReviewHouse></ReviewHouse>
+                        <ReviewHouse v-if="checkoutData" :checkoutData="checkoutData" :changeTab='changeTab'></ReviewHouse>
                     </TabPanel>
+
                     <TabPanel>
-                        <WhoIsComing></WhoIsComing>
+                        <WhoIsComing :host="checkoutData?.homeData?.host" :addComment="addComment" :changeTab="changeTab">
+                        </WhoIsComing>
                     </TabPanel>
+                    
                     <TabPanel>
-                        <CheckoutCard></CheckoutCard>
+                        <CheckoutForm :bookingData="bookingData"></CheckoutForm>
                     </TabPanel>
                 </TabPanels>
             </TabGroup>
         </div>
+        <CheckoutCard v-if="checkoutData" :homeData="{ ...checkoutData?.homeData, totalNights: checkoutData?.totalNights }">
+        </CheckoutCard>
     </div>
 </template>
   
 <script setup>
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue'
+import { computed, ref } from 'vue';
 import CheckoutCard from '../components/checkout/CheckoutCard.vue';
 import ReviewHouse from '../components/checkout/ReviewHouse.vue';
 import WhoIsComing from '../components/checkout/WhoIsComing.vue';
+import CheckoutForm from '../components/checkout/CheckoutForm.vue';
+import UseAuthStore from '../store/AuthStore'
+import { useRoute } from 'vue-router';
 
-// const selected = true
+const route = useRoute()
+const authStore = UseAuthStore()
+const user = computed(() => authStore?.authUser)
+
+
+const selectedTab = ref(0)
+
+
+const changeTab = index => {
+    selectedTab.value = index
+}
+
+
+
+const checkoutData = JSON.parse(route?.query?.data) // from detailsCard  
+console.log('check out data inside checkout', checkoutData);
+
+
+const bookingData = ref({
+    home: {
+        id: checkoutData?.homeData?._id,
+        image: checkoutData?.homeData?.image,
+        title: checkoutData?.homeData?.title,
+        location: checkoutData?.homeData?.location,
+        from: checkoutData?.homeData?.from,
+        to: checkoutData?.homeData?.to,
+    },
+    hostEmail: checkoutData?.homeData?.host?.email,
+    comment: '',
+    price: parseFloat(checkoutData?.totalPrice),
+    guestEmail: user?.email,
+})
+
+// console.log('homeData in checkOut', homeData);
+// const homeData = ref({
+//     _id:'44rrtt6655444',
+//     location:'Dhaka,Bangladesh',
+//     title: "huge apartments" ,
+//     image:'https://images.unsplash.com/photo-1616486029423-aaa4789e8c9a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTd8fGJlZHJvb218ZW58MHx8MHx8&w=1000&q=80' ,
+//     from: '20/3/2022',
+//     to: '23/3/20022',
+//     host: {
+//         name: ' john doe',
+//         image: 'https://c.ndtvimg.com/2022-02/os1u4q8_james-siddons-twitter_625x300_10_February_22.jpg',
+//         email: "haha@gmail.com",
+//     },
+//     price: 98,
+//     total_guest: 4,
+//     bedrooms: 2,
+//     ratings: 4.8,
+//     reviews: 64
+// })
+
+// const bookingData = ref({
+//     homeId: homeData.value?._id,
+//     hostEmail: homeData.value?.host?.email,
+//     totalPrice: parseFloat(homeData.value?.price) + 31,
+//     guestEmail: user?.value?.email
+
+// })
+
+const addComment = (commentData) => {
+    bookingData.value.comment = commentData
+}  
 </script>

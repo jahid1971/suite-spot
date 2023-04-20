@@ -24,6 +24,10 @@
 
 <script setup>
 import { StarIcon } from '@heroicons/vue/24/solid'
+const props = defineProps({
+    home:Object
+})
+
 </script>
 
 <style lang="scss" scoped></style>

@@ -10,7 +10,7 @@ const app = express()
 const port = process.env.PORT || 5000
 
 // Middlewares
-const whitelist = ['http://localhost:5173','http://localhost:5000', 'https://aircnc-a740e.web.app']
+const whitelist = ['http://localhost:5173', 'http://localhost:5000', 'https://aircnc-a740e.web.app']
 const corsOptions = {
     origin: function (origin, callback) {
         if (!origin || whitelist.indexOf(origin) !== -1) {
@@ -85,26 +85,15 @@ async function run() {
     try {
         const homesCollection = client.db('suite-spot').collection('homes')
         const usersCollection = client.db('suite-spot').collection('users')
-    //     const bookingsCollection = client.db('aircnc-db').collection('bookings')
+        const bookingCollection = client.db('suite-spot').collection('bookings')
 
-    //     // Verify Admin
-    //     const verifyAdmin = async (req, res, next) => {
-    //         const decodedEmail = req.decoded.email
-    //         const query = { email: decodedEmail }
-    //         const user = await usersCollection.findOne(query)
-
-    //         if (user?.role !== 'admin') {
-    //             return res.status(403).send({ message: 'forbidden access' })
-    //         }
-    //         console.log('Admin true')
-    //         next()
-    //     }
 
 
         // Save user email & generate JWT
         app.put('/user/:email', async (req, res) => {
             const email = req.params.email
             const user = req.body
+            // console.log(user);
 
             const filter = { email: email }
             const options = { upsert: true }
@@ -119,176 +108,102 @@ async function run() {
             console.log(result)
             res.send({ result, token })
         })
-        
-
-    //     // Get All User
-    //     app.get('/users', verifyJWT, verifyAdmin, async (req, res) => {
-    //         const query = {}
-    //         const cursor = usersCollection.find(query)
-    //         const users = await cursor.toArray()
-    //         res.send(users)
-    //     })
-
-    //     // Get A Single User
-    //     app.get('/user/:email', verifyJWT, async (req, res) => {
-    //         const email = req.params.email
-    //         const decodedEmail = req.decoded.email
-
-    //         if (email !== decodedEmail) {
-    //             return res.status(403).send({ message: 'forbidden access' })
-    //         }
-    //         const query = { email: email }
-    //         const user = await usersCollection.findOne(query)
-    //         res.send(user)
-    //     })
-
-    //     // Get All Homes
-    //     app.get('/homes', async (req, res) => {
-    //         const query = {}
-    //         const cursor = homesCollection.find(query)
-    //         const homes = await cursor.toArray()
-    //         res.send(homes)
-    //     })
-
-    //     // Get All Homes for host
-    //     app.get('/homes/:email', verifyJWT, async (req, res) => {
-    //         const email = req.params.email
-    //         const decodedEmail = req.decoded.email
-
-    //         if (email !== decodedEmail) {
-    //             return res.status(403).send({ message: 'forbidden access' })
-    //         }
-    //         const query = {
-    //             'host.email': email,
-    //         }
-    //         const cursor = homesCollection.find(query)
-    //         const homes = await cursor.toArray()
-    //         res.send(homes)
-    //     })
-
-    //     // Get Single Home
-    //     app.get('/home/:id', async (req, res) => {
-    //         const id = req.params.id
-    //         const query = { _id: ObjectId(id) }
-    //         const home = await homesCollection.findOne(query)
-    //         res.send(home)
-    //     })
-
-    //     // Delete a home
-    //     app.delete('/home/:id', verifyJWT, async (req, res) => {
-    //         const id = req.params.id
-    //         const query = { _id: ObjectId(id) }
-    //         const result = await homesCollection.deleteOne(query)
-    //         res.send(result)
-    //     })
-
-    //     // Update A Home
-    //     app.put('/homes', verifyJWT, async (req, res) => {
-    //         const home = req.body
-    //         console.log(home)
-
-    //         const filter = {}
-    //         const options = { upsert: true }
-    //         const updateDoc = {
-    //             $set: home,
-    //         }
-    //         const result = await homesCollection.updateOne(filter, updateDoc, options)
-    //         res.send(result)
-    //     })
-
-        // Post A Home
-        // app.post('/homes', verifyJWT, async (req, res) => {
-        //     const home = req.body
-        //     console.log(home)
-        //     const result = await homesCollection.insertOne(home)
-        //     res.send(result)
-        // })
 
 
-        app.post('/homes',  async (req, res) => {
+        // get a single user 
+
+        app.get('/user/:email', async (req, res) => {
+            const email = req.params.email
+
+            const query = { email: email }
+            const user = await usersCollection.findOne(query)
+            console.log(user);
+            res.send(user)
+        })
+
+        //getAllUsers
+
+        app.get('/users', async (req, res) => {
+            const query = {}
+            const cursor = usersCollection.find(query)
+            const users = await cursor.toArray()
+            console.log(users);
+            res.send(users)
+        })
+
+
+
+
+        //save bookings 
+
+        app.post('/bookings', async (req, res) => {
+            const bookings = req.body
+            const result = await bookingCollection.insertOne(bookings)
+            console.log(result);
+            res.send(result)
+        })
+
+        //Get Bookings 
+
+        app.get('/bookings', async (req, res) => {
+            let query = {}
+            const email = req.query.email
+            if (email) {
+                query = {
+                    guestEmail: email,
+                }
+            }
+
+            const cursor = bookingCollection.find(query)
+            const bookings = await cursor.toArray()
+            res.send(bookings)
+
+            console.log(bookings);
+
+        })
+
+        //save  Homes
+        app.post('/homes', async (req, res) => {
             const home = req.body
-            console.log(home)
             const result = await homesCollection.insertOne(home)
             console.log(result)
             res.send(result)
         })
 
-    //     // Get search result
-    //     app.get('/search-result', async (req, res) => {
-    //         const query = {}
-    //         const location = req.query.location
-    //         if (location) query.location = location
+        //  get all gomes
+        app.get('/homes', async (req, res) => {
+            const query = {}
+            const cursor = homesCollection.find(query)
+            const homes = await cursor.toArray()
+            res.send(homes)
+        })
 
-    //         console.log(query)
-    //         const cursor = homesCollection.find(query)
-    //         const homes = await cursor.toArray()
-    //         res.send(homes)
-    //     })
+        // get Homes for a host 
 
-    //     // Get Bookings
-    //     app.get('/bookings', verifyJWT, async (req, res) => {
-    //         let query = {}
-    //         const email = req.query.email
-    //         if (email) {
-    //             query = {
-    //                 guestEmail: email,
-    //             }
-    //         }
-    //         const cursor = bookingsCollection.find(query)
-    //         const bookings = await cursor.toArray()
-    //         res.send(bookings)
-    //     })
+        app.get('/homes/:email', async (req, res) => {
+            const email = req.params.email
+            // const decodedEmail = req.decoded.email
 
-    //     // Get a single booking
-    //     app.get('/booking/:id', verifyJWT, async (req, res) => {
-    //         const id = req.params.id
-    //         const query = { _id: ObjectId(id) }
-    //         const booking = await bookingsCollection.findOne(query)
-    //         res.send(booking)
-    //     })
+            // if (email !== decodedEmail) {
+            //   return res.status(403).send({ message: 'forbidden access' })
+            // }
+            const query = {
+                'host.email': email,
+            }
+            const cursor = homesCollection.find(query)
+            const homes = await cursor.toArray()
+            res.send(homes)
+        })
 
-    //     // Save bookings
-    //     app.post('/bookings', verifyJWT, async (req, res) => {
-    //         const booking = req.body
-    //         console.log(booking)
-    //         const result = await bookingsCollection.insertOne(booking)
+        // Get Single Home
+        app.get('/home/:id', async (req, res) => {
+            const id = req.params.id
+            const query = {_id:new ObjectId(id)}
+            const home = await homesCollection.findOne(query)
+            res.send(home)
+        })
 
-    //         console.log('result----->', result)
-    //         sendMail(
-    //             {
-    //                 subject: 'Booking Successful!',
-    //                 message: `Booking Id: ${result?.insertedId}, TransactionId: ${booking.transactionId}`,
-    //             },
-    //             booking?.guestEmail
-    //         )
-    //         res.send(result)
-    //     })
 
-    //     // Create Payment Intent
-    //     app.post('/create-payment-intent', verifyJWT, async (req, res) => {
-    //         const price = req.body.price
-    //         console.log(price)
-    //         const amount = parseFloat(price) * 100
-
-    //         try {
-    //             const paymentIntent = await stripe.paymentIntents.create({
-    //                 amount: amount,
-    //                 currency: 'usd',
-    //                 payment_method_types: ['card'],
-    //             })
-    //             res.send({ clientSecret: paymentIntent.client_secret })
-    //         } catch (err) {
-    //             console.log(err)
-    //         }
-    //     })
-
-    //     // Cancel a booking
-    //     app.delete('/booking/:id', verifyJWT, async (req, res) => {
-    //         const id = req.params.id
-    //         const query = { _id: ObjectId(id) }
-    //         const result = await bookingsCollection.deleteOne(query)
-    //         res.send(result)
-    //     })
 
         console.log('Database Connected...')
     } finally {
