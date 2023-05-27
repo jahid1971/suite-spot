@@ -1,7 +1,11 @@
 <template>
-   <div>
+   <div class="">
+      <div class="w-full text-center text-lg font-semibold">
+         Update Service
+      </div>
       <div class="flex justify-center mt-6">
          <div
+            v-if="homeData"
             class="w-full max-w-md p-8 space-y-3 text-gray-800 rounded-xl bg-gray-50">
             <form
                @submit.prevent="handleSubmit"
@@ -15,6 +19,7 @@
                   <input
                      class="w-full px-4 py-3 text-gray-800 border border-green-300 focus:outline-green-500 rounded-md bg-green-50"
                      name="location"
+                     v-model="homeData.location"
                      id="location"
                      type="text"
                      placeholder="Location"
@@ -27,6 +32,7 @@
                   <input
                      class="w-full px-4 py-3 text-gray-800 border border-green-300 focus:outline-green-500 rounded-md bg-green-50"
                      name="title"
+                     v-model="homeData.title"
                      id="title"
                      type="text"
                      placeholder="Title"
@@ -41,9 +47,8 @@
                            From
                         </p>
                         <VueDatePicker
-                           @closed="setArrivalDate(arrivalDate)"
                            class="w-2/3 text-gray-800 border border-green-300 focus:outline-green-500 rounded-md bg-green-50"
-                           v-model="arrivalDate"
+                           v-model="homeData.from"
                            Default:true
                            auto-apply
                            :close-on-auto-apply="true"
@@ -55,11 +60,9 @@
                      class="shadow-md rounded-md my-2 p-3 flex justify-between items-center">
                      <div>
                         <p class="block text-sm text-gray-500">To</p>
-                        <!-- selected={departureDate} -->
                         <VueDatePicker
-                           @closed="setDepartureDate(departureDate)"
                            class="w-2/3 text-gray-800 border border-green-300 focus:outline-green-500 rounded-md bg-green-50"
-                           v-model="departureDate"
+                           v-model="homeData.to"
                            Default:true
                            auto-apply
                            :close-on-auto-apply="true"
@@ -79,6 +82,7 @@
                      <input
                         class="w-full px-4 py-3 text-gray-800 border border-green-300 focus:outline-green-500 rounded-md bg-green-50"
                         name="price"
+                        v-model="homeData.price"
                         id="price"
                         type="number"
                         placeholder="Price"
@@ -94,6 +98,7 @@
                      <input
                         class="w-full px-4 py-3 text-gray-800 border border-green-300 focus:outline-green-500 rounded-md bg-green-50"
                         name="total_guest"
+                        v-model="homeData.total_guest"
                         id="guest"
                         type="number"
                         placeholder="Total guest"
@@ -111,6 +116,7 @@
                      <input
                         class="w-full px-4 py-3 text-gray-800 border border-green-300 focus:outline-green-500 rounded-md bg-green-50"
                         name="bedrooms"
+                        v-model="homeData.bedrooms"
                         id="bedrooms"
                         type="number"
                         placeholder="Bedrooms"
@@ -126,6 +132,7 @@
                      <input
                         class="w-full px-4 py-3 text-gray-800 border border-green-300 focus:outline-green-500 rounded-md bg-green-50"
                         name="bathrooms"
+                        v-model="homeData.bathrooms"
                         id="bathrooms"
                         type="number"
                         placeholder="Bathrooms"
@@ -160,7 +167,9 @@
                   <textarea
                      id="description"
                      class="block rounded-md focus:green-300 w-full h-20 px-4 py-3 text-gray-800 bg-green-50 border border-green-300 focus:outline-green-500"
-                     name="description"></textarea>
+                     name="description"
+                     v-model="homeData.description">
+                  </textarea>
                </div>
 
                <button
@@ -177,21 +186,36 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import VueDatePicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
 import SmallSpinnerVue from "../spinners/SmallSpinner.vue";
+import UseAuthStore from "../../store/AuthStore";
+import { updateHome } from "../../api/Services";
+import swalToast from "../../utils/mySweetalert";
 
-const props = defineProps({
-   handleSubmit: Function,
-   setArrivalDate: Function,
-   loading: Boolean,
-   setDepartureDate: Function,
-});
+const authStore = UseAuthStore();
 
-const arrivalDate = ref(new Date());
-const departureDate = ref(new Date());
+const props = defineProps(["fetchHomes"]);
 
+const homeData = computed(() => authStore.modalData);
+
+// const arrivalDate = ref(new Date(homeData.value?.from));
+// const departureDate = ref(new Date(homeData.value?.to));
+const loading = ref(false)
+console.log("modalData?homeData ===>", homeData.value);
+
+const handleSubmit = () => {
+   console.log("homeData ....", homeData.value);
+
+   loading.value = true
+   updateHome(homeData.value).then((data) => {
+      loading.value = false 
+      authStore.closeModal();
+      props.fetchHomes();
+      console.log("data after update home...=>", data);
+   });
+};
 </script>
 
 <style scoped></style>

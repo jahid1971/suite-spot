@@ -1,5 +1,5 @@
 <template>
-   <div class='md:flex justify-center gap-10 px-6 md:px-10 lg:px-20'>
+   <div class='md:flex justify-center gap-2 px-6 md:px-10 lg:px-20'>
       <div class='mt-4'>
          <SearchForm />
       </div>

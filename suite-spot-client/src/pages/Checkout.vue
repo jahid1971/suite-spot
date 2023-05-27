@@ -1,5 +1,5 @@
 <template>
-    <div class='md:flex gap-5 items-start justify-between sm:mx-10 md:mx-20 px-4 lg:mx-40 py-4'>
+    <div class='md:flex gap-5 items-start justify-between sm:mx-10 md:mx-20 px-4 lg:mx-32 py-4'>
         <div class="flex-1">
             <TabGroup :selectedIndex="selectedTab" @change="changeTab">
                 <TabList>
@@ -75,7 +75,7 @@ import { computed, ref } from 'vue';
 import CheckoutCard from '../components/checkout/CheckoutCard.vue';
 import ReviewHouse from '../components/checkout/ReviewHouse.vue';
 import WhoIsComing from '../components/checkout/WhoIsComing.vue';
-import CheckoutForm from '../components/checkout/CheckoutForm.vue';
+import CheckoutForm from '../components/checkout/payment/CheckoutForm.vue';
 import UseAuthStore from '../store/AuthStore'
 import { useRoute } from 'vue-router';
 
@@ -103,42 +103,16 @@ const bookingData = ref({
         image: checkoutData?.homeData?.image,
         title: checkoutData?.homeData?.title,
         location: checkoutData?.homeData?.location,
-        from: checkoutData?.homeData?.from,
-        to: checkoutData?.homeData?.to,
+        from: checkoutData?.arrivalDate,
+        to: checkoutData?.departureDate,
     },
     hostEmail: checkoutData?.homeData?.host?.email,
     comment: '',
     price: parseFloat(checkoutData?.totalPrice),
-    guestEmail: user?.email,
+    guestEmail: user.value?.email
 })
 
-// console.log('homeData in checkOut', homeData);
-// const homeData = ref({
-//     _id:'44rrtt6655444',
-//     location:'Dhaka,Bangladesh',
-//     title: "huge apartments" ,
-//     image:'https://images.unsplash.com/photo-1616486029423-aaa4789e8c9a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTd8fGJlZHJvb218ZW58MHx8MHx8&w=1000&q=80' ,
-//     from: '20/3/2022',
-//     to: '23/3/20022',
-//     host: {
-//         name: ' john doe',
-//         image: 'https://c.ndtvimg.com/2022-02/os1u4q8_james-siddons-twitter_625x300_10_February_22.jpg',
-//         email: "haha@gmail.com",
-//     },
-//     price: 98,
-//     total_guest: 4,
-//     bedrooms: 2,
-//     ratings: 4.8,
-//     reviews: 64
-// })
 
-// const bookingData = ref({
-//     homeId: homeData.value?._id,
-//     hostEmail: homeData.value?.host?.email,
-//     totalPrice: parseFloat(homeData.value?.price) + 31,
-//     guestEmail: user?.value?.email
-
-// })
 
 const addComment = (commentData) => {
     bookingData.value.comment = commentData

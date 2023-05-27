@@ -5,12 +5,12 @@
       <div>
         <p class='my-3 text-gray-500'>Say hello to your host</p>
         <p class='my-3 text-gray-500'>
-          Let {{host?.name}} know a little about yourself and why you're coming.
+          Let {{ host?.name }} know a little about yourself and why you're coming.
         </p>
       </div>
       <div class='flex flex-col items-center justify-center'>
         <img alt='' class='w-16 h-16 border rounded-full' :src='host?.image' />
-        <p>{{host?.name}}</p>
+        <p>{{ host?.name }}</p>
       </div>
     </div>
     <textarea v-model="commentData" @change="" class='border block my-5 p-2'
@@ -36,7 +36,7 @@
 <script setup>
 import { ref, defineProps } from 'vue';
 
-const props = defineProps(['addComment', 'changeTab','host'])
+const props = defineProps(['addComment', 'changeTab', 'host'])
 
 const commentData = ref("")
 const test = () => {

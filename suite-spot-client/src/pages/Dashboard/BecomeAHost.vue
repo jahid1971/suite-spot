@@ -1,9 +1,13 @@
 <template>
     <div>
-       <Spinner v-if="loading"></Spinner>
-        <div v-if="role && !loading"
-            className='h-screen text-gray-600 flex flex-col justify-center items-center pb-16 text-xl lg:text-3xl'>
+       <Spinner v-if="roleLoader"></Spinner>
+        <div v-if="role ==='requested' && !roleLoader"
+            class='h-screen text-gray-600 flex flex-col justify-center items-center pb-16 text-xl lg:text-3xl'>
             Request Sent, wait for admin approval
+        </div>
+        <div v-if="(role ==='host+user' || role ==='host') && !roleLoader"
+            class='h-screen text-gray-600 flex flex-col justify-center items-center pb-16 text-xl lg:text-3xl'>
+            you are already a host
         </div>
         <BecomeHostForm v-else :handleSubmit="handleSubmit"></BecomeHostForm>
     </div>
@@ -15,21 +19,22 @@ import { hostRequest, getRole } from '../../api/User';
 import BecomeHostForm from '../../components/form/BecomeHostForm.vue';
 import Spinner from '../../components/spinners/Spinner.vue';
 import UseAuthStore from '../../store/AuthStore';
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 
-const user = UseAuthStore().user
-const role = ref(null)
-const loading = ref(false)
+const authStore = UseAuthStore()
+const user = authStore.user
+const role = computed(() => authStore.role)
+const roleLoader =  computed(() => authStore.roleLoader)
 
 
-onMounted(() => {
-    loading.value = true
-    getRole(user)
-        .then((data) => {
-            role.value = data?.role
-            console.log("get Role data", data?.role)
-        }).then(() => loading.value = false)
-})
+// onMounted(() => {
+//     loading.value = true
+//     getRole(user)
+//         .then((data) => {
+//             role.value = data?.role
+//             console.log("get Role data", data?.role)
+//         }).then(() => loading.value = false)
+// })
 
 
 const handleSubmit = (event) => {
