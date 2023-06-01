@@ -29,7 +29,7 @@ import { StarIcon } from '@heroicons/vue/24/solid'
 const props = defineProps({ exp: Object })
 
 const { exp } = props
-console.log(exp.title);
+
 </script>
 
 <style lang="scss" scoped></style>

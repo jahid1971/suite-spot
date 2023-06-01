@@ -46,19 +46,6 @@
       </div>
       <p class="font-semibold text-xl text-red-500">{{ message }}</p>
 
-      <!-- 
-      <div
-         class="flex justify-between items-center py-2 border-t border-gray-200 mt-1 mb-2">
-         <p>Availabe For</p>
-         <div class="flex justify-between items-center gap-2">
-            <div>{{ format(new Date(homeData?.from), "P") }}</div>
-            <div>
-               <ArrowRightIcon class="h5 w-5" />
-            </div>
-            <div>{{ format(new Date(homeData?.to), "P") }}</div>
-         </div>
-      </div> -->
-
       <div class="flex border-t border-gray-200 py-2">
          <span class="text-gray-500">Maximum Guest</span>
          <span class="ml-auto text-gray-900">{{ homeData?.total_guest }}</span>
@@ -85,11 +72,13 @@
       <div class="mt-6 mb-2">
          <PrimaryButton
             @click="handleReserve"
-            classes="w-full px-4 py-2 tracking-wide transition-colors duration-300 transform rounded-md"
-            :disabled="!isActive">
+            classes="w-full px-4 py-2 tracking-wide transition-colors duration-300 transform rounded-md">
             Reserve
          </PrimaryButton>
       </div>
+      <p v-if="dateSelectrequest" class="font-semibold text-xl text-red-500">
+         Please select arrival and departure date
+      </p>
       <p class="text-center text-gray-400 mb-6">You won't be charged yet!</p>
    </div>
 </template>
@@ -108,24 +97,24 @@ const props = defineProps({
    homeAndBookings: Object,
 });
 const homeData = props.homeAndBookings.home;
-const availableDates = props.homeAndBookings.availableDates;
 const alreadyBookedDates = props.homeAndBookings.alreadyBookedDates;
-// alreadyBookedDates.sort((a, b) => a - b);
 
-console.log("already dates  ", alreadyBookedDates);
+console.log('already booked ',alreadyBookedDates);
 
 const arrivalDate = ref(new Date());
 const departureDate = ref(new Date());
 const message = ref("");
-const isActive = ref(false);
+const dateSelectrequest = ref(false);
+const dateSelected = ref(false);
 
 // Date Validation
 const isDateSelected = () => {
    if (arrivalDate.value > departureDate.value)
-      return (message.value = "Departure Date must be after arrival date!!!")
+      return (message.value = "Departure Date must be after arrival date!!!");
    if (arrivalDate.value.toDateString() === departureDate.value.toDateString())
       return (message.value = " Arrival and Departure date can not be the same date!!!");
 
+      // console.log('arrival dearture ',new Date(arrivalDate.value).setMinutes(0), departureDate.value.setMinutes(0));
    const selectedDates = eachDayOfInterval({
       start: new Date(arrivalDate.value),
       end: new Date(departureDate.value),
@@ -143,7 +132,8 @@ const isDateSelected = () => {
          "Sorry!! your selected date range is not available. Please try with another Date.";
       return;
    }
-   isActive.value = true;
+   dateSelected.value = true
+   dateSelectrequest.value = false;
    message.value = "";
    return;
 };
@@ -157,13 +147,20 @@ const totalNights = computed(() => {
 const sub_total = computed(() => parseFloat(homeData?.price) * totalNights.value);
 const total = computed(() => sub_total.value + 21 + 10);
 
+//  handle reserve button
 const handleReserve = () => {
+   if (!dateSelected.value) {
+      dateSelectrequest.value = true;
+      return;
+   }
    const data = {
       homeData: homeData,
       totalNights: totalNights.value,
       totalPrice: total.value,
-      arrivalDate: arrivalDate.value,
-      departureDate: departureDate.value,
+      arrivalDate: new Date(arrivalDate.value),
+      departureDate: new Date(departureDate.value),
+      // arrivalDate: arrivalDate.value,
+      // departureDate: departureDate.value,
    };
 
    router.push({

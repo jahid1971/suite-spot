@@ -64,7 +64,7 @@
                 </TabPanels>
             </TabGroup>
         </div>
-        <CheckoutCard v-if="checkoutData" :homeData="{ ...checkoutData?.homeData, totalNights: checkoutData?.totalNights }">
+        <CheckoutCard v-if="checkoutData" :checkoutData="checkoutData">
         </CheckoutCard>
     </div>
 </template>

@@ -1,55 +1,49 @@
-import axios from "axios"
+import axios from "axios";
 
-const url = import.meta.env.VITE_BASE_URL
+const url = import.meta.env.VITE_BASE_URL;
 
+export const hostRequest = async (user) => {
+   const response = await axios.put(`${url}/user/${user?.email}`, user, {
+      headers: {
+         "Content-Type": "application/json",
+      },
+   });
 
-
-export const hostRequest = async user => {
-    const response = await axios.put(`${url}/user/${user?.email}`, user, {
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-
-    return response.data;
-}
+   return response.data;
+};
 
 //host request accept by admin
-export const makeHost = async user => {
-    delete user._id
-    // const response = await fetch(
-    //     `${process.env.REACT_APP_API_URL}/user/${user?.email}`,
-    //     {
-    //         method: 'PUT',
-    //         headers: {
-    //             'content-type': 'application/json',
-    //             authorization: `Bearer ${localStorage.getItem('aircnc-token')}`,
-    //         },
-    //         body: JSON.stringify({ ...user, role: 'host' }),
-    //     }
-    // )
-    // const users = await response.json()
+export const makeHost = async (user) => {
+   delete user._id;
+   const response = await axios.put(`${url}/user/${user.email}`, user, {
+      headers: {
+         "Content-Type": "application/json",
+         authorization: `Bearer ${localStorage.getItem("suiteSpot-token")}`,
+      },
+   });
 
+   return response.data;
+};
 
-    const response = await axios.put(`${url}/user/${user.email}`,user,{
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-
-    return response.data
-}
-
-//get user role 
-export const getRole = async email => {
-    const response = await axios.get(`${url}/user/${email}`)
-    console.log(response.data?.role, 'inside getRole function');
-    return response.data?.role;
-    // console.log(user?.email,'inside function ');
-}
+//get user role
+export const getRole = async (email) => {
+   const response = await axios.get(`${url}/user/${email}`, {
+      headers: {
+         "Content-Type": "application/json",
+         authorization: `Bearer ${localStorage.getItem("suiteSpot-token")}`,
+      },
+   });
+   console.log(response.data?.role, "inside getRole function");
+   return response.data?.role;
+};
 
 // get all user
 export const getAllUsers = async () => {
-    const response = await axios.get(`${url}/users`)
-    return response.data
-}
+   const response = await axios.get(`${url}/users`,{
+      headers: {
+         "Content-Type": "application/json",
+         authorization: `Bearer ${localStorage.getItem("suiteSpot-token")}`,
+      },
+   });
+   return response.data;
+};

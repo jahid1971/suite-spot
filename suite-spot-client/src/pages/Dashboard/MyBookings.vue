@@ -2,17 +2,11 @@
    <div>
       <Spinner v-if="loading"></Spinner>
       <div
-         v-if="
-            !loading &&
-            bookings &&
-            Array.isArray(bookings) &&
-            bookings.length > 0
-         "
+         v-if="!loading && bookings && Array.isArray(bookings) && bookings.length > 0"
          class="container mx-auto px-4 sm:px-8">
          <div class="py-8">
             <div class="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-x-auto">
-               <div
-                  class="inline-block min-w-full shadow rounded-lg overflow-hidden">
+               <div class="inline-block min-w-full shadow rounded-lg overflow-hidden">
                   <table class="min-w-full leading-normal">
                      <thead>
                         <tr>
@@ -52,11 +46,8 @@
                         <TableRow
                            v-for="booking in bookings"
                            :key="booking._id"
-                           :booking="booking"
-                            ></TableRow>
-                        <ModalDelete
-                           :modalHandler="modalHandler">
-                        </ModalDelete>
+                           :booking="booking"></TableRow>
+                        <ModalDelete :modalHandler="modalHandler"> </ModalDelete>
                      </tbody>
                   </table>
                </div>
@@ -69,8 +60,7 @@
             class="h-screen text-gray-600 gap-5 flex flex-col justify-center items-center pb-16 text-xl lg:text-3xl">
             You haven't booked any home yet.
             <router-link to="/">
-               <PrimaryButton
-                  class="px-6 py-2 text-medium font-semibold rounded-full">
+               <PrimaryButton class="px-6 py-2 text-medium font-semibold rounded-full">
                   Browse Homes
                </PrimaryButton>
             </router-link>
@@ -88,24 +78,26 @@ import TableRow from "../../components/TableRow.vue";
 import Spinner from "../../components/spinners/Spinner.vue";
 import ModalDelete from "../../components/Modals/ModalDelete.vue";
 import { deleteBooking } from "../../api/Bookings";
+import swalToast from "../../utils/mySweetalert";
 
-const authStore = UseAuthStore()
+const authStore = UseAuthStore();
 const user = authStore.user;
 const bookings = ref([]);
 const loading = ref(false);
 
 const fetchBookings = () => {
    loading.value = true;
-   getBookings(user?.email)
-      .then((data) => (bookings.value = data))
-      .then(() => (loading.value = false))
-      .then(() => console.log("my  booking data", bookings.value));
+   getBookings(user?.email).then((data) => {
+      bookings.value = data;
+      if (authStore.role === "host") authStore.role = "user";
+      loading.value = false;
+      console.log("my  booking data", bookings.value);
+   });
 };
 
 onMounted(() => {
    fetchBookings();
 });
-
 
 // const openModal = authStore.openModal
 
@@ -113,8 +105,9 @@ const modalHandler = (id) => {
    deleteBooking(id).then((data) => {
       console.log("deleted booking from mybooking", data);
       getBookings(user?.email).then((data) => (bookings.value = data));
+      swalToast("Booking has been canceled", "success");
    });
-   authStore.closeModal()
+   authStore.closeModal();
 };
 </script>
 

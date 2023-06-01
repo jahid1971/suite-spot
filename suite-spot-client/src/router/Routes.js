@@ -3,6 +3,7 @@ import DefaultLayout from "../layouts/DefaultLayout.vue";
 import SignUp from "../pages/logIn/SignUp.vue";
 import SignIn from "../pages/logIn/SignIn.vue";
 import Home from "../pages/Home.vue";
+import AllHomes from "../pages/AllHomes.vue";
 import ComingSoon from "../pages/shared/Coming-soon.vue";
 import SearchResult from "../pages/SearchResult.vue";
 import Details from "../pages/Details.vue";
@@ -47,6 +48,11 @@ const router = createRouter({
                name: "home",
             },
             {
+               path: "/all-homes",
+               component: AllHomes,
+               name: "allHomes",
+            },
+            {
                path: "/sign-up",
                component: SignUp,
                name: "signUp",
@@ -78,10 +84,10 @@ const router = createRouter({
                meta: { requiresAuth: true, title: "checkout" },
             },
             {
-              path: "/sr-redirect",
-              component: SrReturn,
-              meta: { title: "sr-redirect",requiresAuth: true },
-           },
+               path: "/sr-redirect",
+               component: SrReturn,
+               meta: { title: "sr-redirect", requiresAuth: true },
+            },
          ],
       },
 
@@ -123,11 +129,13 @@ const router = createRouter({
                path: "/dashboard/add-homes",
                component: AddHomes,
                name: "addHomes",
+               meta: { requiresHost: true },
             },
             {
                path: "/dashboard/manage-homes",
                component: ManageHomes,
                name: "manageHomes",
+               meta: { requiresHost: true },
             },
          ],
       },
@@ -141,20 +149,16 @@ router.beforeEach(async (to, from, next) => {
    const authStore = UseAuthStore();
    authStore.routeLoader = true;
 
-   // console.log('testttt', await authStore.adminAccess());
-
    if (to.meta.requiresAuth && !(await authStore.authenticated()))
+      next({ name: "signIn" ,  query: { redirectTo: to.fullPath } });
+   else if (to.meta.requiresAdmin && (await authStore.authorizeAdminHost()) !== "admin")
       next({ name: "signIn" });
-   else if (
-      to.meta.requiresAdmin &&
-      (await authStore.adminAccess()) !== "admin"
-   )
+   else if (to.meta.requiresHost && (await authStore.authorizeAdminHost()) !== "host")
       next({ name: "signIn" });
    else next();
 });
 
-// router.afterEach((to) => {
-// });
+// after each
 
 router.afterEach((to, from) => {
    nextTick(() => {

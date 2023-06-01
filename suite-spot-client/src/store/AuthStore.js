@@ -28,7 +28,7 @@ const UseAuthStore = defineStore("auth", {
       roleLoader: true,
       isModalOpen: false,
       modalData: null,
-      modalId: 'defaultModal'
+      modalId: "defaultModal",
       // toggleInSidebar:false
    }),
    getters: {
@@ -41,15 +41,15 @@ const UseAuthStore = defineStore("auth", {
    },
 
    actions: {
-      openModal( modalData, modalId ) {
-        this.isModalOpen = true;
+      openModal(modalData, modalId) {
+         this.isModalOpen = true;
          this.modalData = modalData;
-         this.modalId = modalId
+         this.modalId = modalId;
          console.log(this.modalId);
       },
 
       closeModal() {
-        this.isModalOpen = false;
+         this.isModalOpen = false;
       },
 
       //1. createUser
@@ -96,16 +96,9 @@ const UseAuthStore = defineStore("auth", {
       //log out
       logout() {
          this.authLoading = true;
-         // localStorage.removeItem('aircnc-token')
+         localStorage.removeItem("suiteSpot-token");
          return signOut(auth);
       },
-
-      // const authenticated =
-      // await new Promise(resolve => {
-      //   auth.onAuthStateChanged(user => {
-      //     resolve(user)
-      //   })
-      // })
 
       // get User role function
       getUserRole(userEmail) {
@@ -113,24 +106,15 @@ const UseAuthStore = defineStore("auth", {
             .then((data) => {
                this.role = data;
                this.roleLoader = false;
-               console.log(
-                  "get roleloader role  inside store ",
-                  this.roleLoader,
-                  this.role
-               );
+               console.log("get roleloader role  inside store ", this.role);
                return data;
             })
-            .catch((err) => console.log(err, "getRole error"));
+            .catch((err) => console.log("getRole error", err));
       },
 
       async authenticated() {
          if (!this.authLoading) return this.authUser;
-
          if (this.authLoading) {
-            console.log(
-               "authenticated(): returning  user",
-               this.authUser
-            );
             const user = await new Promise((resolve) => {
                auth.onAuthStateChanged((user) => {
                   resolve(user);
@@ -140,7 +124,7 @@ const UseAuthStore = defineStore("auth", {
          }
       },
 
-      adminAccess() {
+      authorizeAdminHost() {
          if (!this.roleLoader) {
             console.log("inside adminaccess if", this.role);
             return this.role;
@@ -151,18 +135,12 @@ const UseAuthStore = defineStore("auth", {
       },
 
       initialize() {
-         const unsubscribe = onAuthStateChanged(
-            auth,
-            (currentUser) => {
-               this.authUser = currentUser;
-               this.authLoading = false;
-               console.log(
-                  this.authLoading,
-                  "onAuthstatechange made loadinnnnnggg false"
-               );
-               this.getUserRole(currentUser?.email); // getting user role
-            }
-         );
+         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+            this.authUser = currentUser;
+            this.authLoading = false;
+            console.log(this.authLoading, "onAuthstatechange made loadinnnnnggg false");
+            this.getUserRole(currentUser?.email); // getting user role
+         });
 
          return () => {
             //this part will execute once the component is unmounted.

@@ -2,10 +2,10 @@
     <div class='px-6 py-5 md:w-1/2 lg:w-1/3 w-full h-full rounded-md shadow-lg'>
         <div class='flex justify-between'>
             <div class='text-gray-900 text-xl title-font font-medium mb-2 w-1/2'>
-                {{ homeData?.title }}
+                {{ checkoutData?.homeData?.title }}
             </div>
             <Link to='/service-details' class='block relative h-28 rounded overflow-hidden w-1/2'>
-            <img alt='e-commerce' class='object-cover object-center w-full h-full block' :src='homeData?.image' />
+            <img alt='e-commerce' class='object-cover object-center w-full h-full block' :src='checkoutData?.homeData?.image' />
             </Link>
         </div>
         <div class='flex gap-1 mb-2'>
@@ -15,16 +15,16 @@
 
         <p>Dates</p>
         <div class='flex justify-between items-center p-2 border mt-1 mb-2'>
-            <div>{{ format(new Date(homeData?.from), 'P') }}</div>
+            <div>{{ format(new Date(checkoutData?.arrivalDate), 'P') }}</div>
             <div>
                 <ArrowRightIcon class='h5 w-5' />
             </div>
-            <div>{{ format(new Date(homeData?.from), 'P') }}</div>
+            <div>{{ format(new Date(checkoutData?.departureDate), 'P') }}</div>
         </div>
 
         <div class='flex border-t border-gray-200 py-2'>
             <span class='text-gray-500'>
-                ${{ homeData?.price }} x {{ homeData?.totalNights }} nights
+                ${{ checkoutData?.homeData?.price }} x {{ checkoutData?.totalNights }} nights
             </span>
             <span class='ml-auto text-gray-900'>${{ sub_total }}</span>
         </div>
@@ -47,9 +47,9 @@
 import { ArrowRightIcon } from '@heroicons/vue/24/solid';
 import { format } from 'date-fns'
 
-const props = defineProps(['homeData'])
+const props = defineProps(['checkoutData'])
 
-let sub_total = parseFloat(props.homeData?.price) * props.homeData?.totalNights
+let sub_total = parseFloat(props.checkoutData?.homeData?.price) * props.checkoutData?.totalNights
 let total = sub_total + 21 + 10
 
 </script>

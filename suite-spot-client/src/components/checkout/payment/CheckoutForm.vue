@@ -91,7 +91,6 @@ const handleSubmit = async () => {
             message.value = "Payment successful!";
             transactionId.value = paymentIntent.id;
             console.log(paymentIntent, "payment intentt");
-            // window.location.href = `${window.location.origin}/success-page`;
             const data = {
                transactionId: paymentIntent.id,
                ...bookingData,
@@ -99,7 +98,7 @@ const handleSubmit = async () => {
             saveBookings(data)
                .then((data) => {
                   isLoading.value = false;
-                  swalToast("payment successfull", "success");
+                  swalToast("booking successfull. Check your email for details", "success");
                   router.push("/dashboard/my-bookings");
                   console.log("savebookings result ====> ", data);
                })
@@ -139,7 +138,7 @@ const handleSubmit = async () => {
 
 <style scoped>
 #card-element {
-   @apply block p-2 text-xl pl-4 bg-gray-50 border border-gray-300 text-gray-900  rounded-md focus:ring-blue-500 focus:border-blue-500  w-full  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500;
+   @apply block p-3 text-4xl pl-4  bg-gray-50 border border-gray-300 text-gray-900  rounded-md focus:ring-blue-500 focus:border-blue-500  w-full  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500;
 }
 
 button:hover {

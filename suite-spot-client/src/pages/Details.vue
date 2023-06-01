@@ -6,7 +6,7 @@
             <img
                alt="feature"
                class="object-cover object-start h-full w-full"
-               :src="homeData?.image" />
+               :src="homeAndBookings?.home?.image" />
          </div>
          <div class="w-1/2 h-full overflow-hidden">
             <img

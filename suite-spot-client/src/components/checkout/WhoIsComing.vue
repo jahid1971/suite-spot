@@ -1,14 +1,14 @@
 <template>
   <div>
     <h1 class='text-2xl font-bold'>Traveling for work?</h1>
-    <div class='flex gap-10 flex-wrap-justify-between'>
+    <div class='flex gap-4 flex-wrap-justify-between'>
       <div>
         <p class='my-3 text-gray-500'>Say hello to your host</p>
         <p class='my-3 text-gray-500'>
           Let {{ host?.name }} know a little about yourself and why you're coming.
         </p>
       </div>
-      <div class='flex flex-col items-center justify-center'>
+      <div class='flex flex-col items-center justify-center text-center'>
         <img alt='' class='w-16 h-16 border rounded-full' :src='host?.image' />
         <p>{{ host?.name }}</p>
       </div>

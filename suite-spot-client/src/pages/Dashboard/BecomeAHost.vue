@@ -5,7 +5,7 @@
             class='h-screen text-gray-600 flex flex-col justify-center items-center pb-16 text-xl lg:text-3xl'>
             Request Sent, wait for admin approval
         </div>
-        <div v-if="(role ==='host+user' || role ==='host') && !roleLoader"
+        <div v-else-if="(role ==='host+user' || role ==='host') && !roleLoader"
             class='h-screen text-gray-600 flex flex-col justify-center items-center pb-16 text-xl lg:text-3xl'>
             you are already a host
         </div>
@@ -20,6 +20,7 @@ import BecomeHostForm from '../../components/form/BecomeHostForm.vue';
 import Spinner from '../../components/spinners/Spinner.vue';
 import UseAuthStore from '../../store/AuthStore';
 import { computed, onMounted, ref } from 'vue';
+import swalToast from '../../utils/mySweetalert'
 
 const authStore = UseAuthStore()
 const user = authStore.user
@@ -56,8 +57,12 @@ const handleSubmit = (event) => {
             //// Send request do server
             hostRequest(hostData)
                 .then(data => {
-                    if (data?.result?.acknowledged) role.value = "requested"  //set role 
-                    console.log(data?.result, '....... hostRequest response ')
+                    if (data?.result?.acknowledged) { 
+                        authStore.role = "requested"  //set role 
+                        console.log(data?.result, '....... hostRequest response ')
+                        swalToast("Request Sent,please wait for admin approval.", "success")
+                    }
+                    
                 })
                 .catch(error => console.log(error))
 
